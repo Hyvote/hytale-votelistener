@@ -1,6 +1,6 @@
 package com.hyvote.votelistener.util;
 
-import com.hyvote.votifier.Vote;
+import org.hyvote.plugins.votifier.vote.Vote;
 
 /**
  * Utility class for processing command placeholders.

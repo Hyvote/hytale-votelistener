@@ -22,5 +22,6 @@ HytaleVotifier.jar
 .DS_Store
 Thumbs.db
 
-# Decompiled sources
-com/
+# Decompiled sources (root level only)
+/com/
+/org/

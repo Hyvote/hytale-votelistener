@@ -9,7 +9,7 @@ import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.listener.PlayerJoinListener;
 import com.hyvote.votelistener.command.ClaimVotesCommand;
 import com.hyvote.votelistener.listener.VoteListener;
-import com.hyvote.votifier.event.VoteEvent;
+import org.hyvote.plugins.votifier.event.VoteEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 
 import javax.annotation.Nonnull;
