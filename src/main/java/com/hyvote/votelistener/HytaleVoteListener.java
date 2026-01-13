@@ -3,6 +3,8 @@ package com.hyvote.votelistener;
 import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.plugin.PluginInit;
 import com.hypixel.hytale.common.plugin.PluginType;
+import com.hyvote.votelistener.listener.VoteListener;
+import com.hyvote.votifier.event.VoteEvent;
 
 /**
  * HytaleVoteListener - Vote reward plugin for Hytale servers.
@@ -11,6 +13,8 @@ import com.hypixel.hytale.common.plugin.PluginType;
  * rewards including commands, random rewards, vote streaks, and milestone bonuses.
  */
 public class HytaleVoteListener extends PluginBase {
+
+    private VoteListener voteListener;
 
     /**
      * Plugin constructor called by the server during plugin loading.
@@ -38,6 +42,11 @@ public class HytaleVoteListener extends PluginBase {
     public void start() {
         String version = getManifest().getVersion();
         getLogger().info("HytaleVoteListener v" + version + " enabled");
+
+        // Create and register vote event listener
+        voteListener = new VoteListener(getServer(), getLogger());
+        getServer().getEventBus().subscribe(VoteEvent.class, voteListener::onVote);
+        getLogger().info("Registered vote event listener");
     }
 
     /**
@@ -46,6 +55,9 @@ public class HytaleVoteListener extends PluginBase {
      */
     @Override
     public void shutdown() {
+        if (voteListener != null) {
+            getLogger().info("Unregistered vote event listener");
+        }
         getLogger().info("HytaleVoteListener disabled");
     }
 
