@@ -69,8 +69,8 @@ public class Config {
      */
     public Config() {
         this.commands = new ArrayList<>();
-        this.commands.add("say %player% voted on %service%!");
-        this.commands.add("give %player% diamond 1");
+        this.commands.add("say %player% has voted on %service%");
+        this.commands.add("give %player% Weapon_Staff_Onyxium");
         this.broadcastVote = true;
         this.debugMode = false;
         this.randomRewardsEnabled = true;
@@ -80,21 +80,21 @@ public class Config {
         this.randomRewards.add(new RandomReward(
             "common",
             70.0,
-            Arrays.asList("give %player% iron_ingot 5")
+            Arrays.asList("give %player% Consumable_Apple 5")
         ));
 
         // Rare tier - 25% chance
         this.randomRewards.add(new RandomReward(
             "rare",
             25.0,
-            Arrays.asList("give %player% gold_ingot 3")
+            Arrays.asList("give %player% Armor_Leather_Chest")
         ));
 
         // Legendary tier - 5% chance
         this.randomRewards.add(new RandomReward(
             "legendary",
             5.0,
-            Arrays.asList("give %player% diamond 1", "say %player% got a legendary reward!")
+            Arrays.asList("give %player% Weapon_Sword_Onyxium", "say %player% got a legendary reward!")
         ));
 
         // Initialize streak bonus configuration
@@ -105,21 +105,21 @@ public class Config {
         this.streakBonuses.add(new StreakBonus(
             3,
             "3-day",
-            Arrays.asList("give %player% emerald 1")
+            Arrays.asList("give %player% Consumable_Potion_Health")
         ));
 
         // 7-day (weekly) streak bonus
         this.streakBonuses.add(new StreakBonus(
             7,
             "weekly",
-            Arrays.asList("give %player% diamond 2", "say %player% has a %streak%-day vote streak!")
+            Arrays.asList("give %player% Tool_Pickaxe_Iron", "say %player% has a %streak%-day vote streak!")
         ));
 
         // 30-day (monthly) streak bonus
         this.streakBonuses.add(new StreakBonus(
             30,
             "monthly",
-            Arrays.asList("give %player% diamond_block 1")
+            Arrays.asList("give %player% Armor_Onyxium_Full")
         ));
 
         // Initialize milestone bonus configuration
@@ -130,21 +130,21 @@ public class Config {
         this.milestoneBonuses.add(new MilestoneBonus(
             10,
             "first-ten",
-            Arrays.asList("give %player% emerald 3")
+            Arrays.asList("give %player% Consumable_Potion_Health 3")
         ));
 
         // 50 votes milestone
         this.milestoneBonuses.add(new MilestoneBonus(
             50,
             "fifty",
-            Arrays.asList("give %player% diamond 3")
+            Arrays.asList("give %player% Weapon_Bow_Rare")
         ));
 
         // 100 votes milestone
         this.milestoneBonuses.add(new MilestoneBonus(
             100,
             "century",
-            Arrays.asList("give %player% diamond_block 1", "say %player% reached %totalvotes% total votes!")
+            Arrays.asList("give %player% Mount_Horse_Rare", "say %player% reached %totalvotes% total votes!")
         ));
     }
 
