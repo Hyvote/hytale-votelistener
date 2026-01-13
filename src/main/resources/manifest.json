@@ -1,0 +1,17 @@
+{
+    "Group": "Hyvote",
+    "Name": "HytaleVoteListener",
+    "Version": "1.0.0",
+    "Authors": [
+        {
+            "Name": "Hyvote Contributors",
+            "Url": "https://github.com/hyvote/hytale-votelistener"
+        }
+    ],
+    "Website": "https://github.com/hyvote/hytale-votelistener",
+    "Main": "com.hyvote.votelistener.HytaleVoteListener",
+    "ServerVersion": "*",
+    "Dependencies": {
+        "Hyvote:HytaleVotifier": "*"
+    }
+}
