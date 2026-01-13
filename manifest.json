@@ -1,0 +1,17 @@
+{
+  "Group": "HyVote",
+  "Name": "HytaleVoteListener",
+  "Version": "1.0.0",
+  "Description": "Vote reward plugin for Hytale servers - delivers configurable rewards for votes",
+  "Authors": [
+    {
+      "Name": "HyVote Team"
+    }
+  ],
+  "Website": "https://github.com/Hyvote/hytale-votelistener",
+  "Main": "com.hyvote.votelistener.HytaleVoteListener",
+  "ServerVersion": ">=1.0.0",
+  "Dependencies": {
+    "HytaleVotifier": ">=1.0.0"
+  }
+}
