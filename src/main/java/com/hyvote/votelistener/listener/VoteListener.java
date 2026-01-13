@@ -3,6 +3,7 @@ package com.hyvote.votelistener.listener;
 import com.hyvote.votifier.event.VoteEvent;
 import com.hyvote.votifier.Vote;
 import com.hyvote.votelistener.config.Config;
+import com.hyvote.votelistener.config.MilestoneBonus;
 import com.hyvote.votelistener.config.RandomReward;
 import com.hyvote.votelistener.config.StreakBonus;
 import com.hyvote.votelistener.data.PlayerVoteData;
@@ -102,6 +103,26 @@ public class VoteListener {
                         }
                     }
                     break; // Only award one streak bonus per vote
+                }
+            }
+        }
+
+        // Execute milestone bonus rewards if enabled
+        if (config.isMilestoneBonusEnabled()) {
+            for (MilestoneBonus milestoneBonus : config.getMilestoneBonuses()) {
+                if (totalVotes == milestoneBonus.getVotesRequired()) {
+                    logger.info("Awarding milestone bonus: " + milestoneBonus.getName());
+
+                    for (String bonusCommand : milestoneBonus.getCommands()) {
+                        String processedBonusCommand = PlaceholderProcessor.process(
+                            bonusCommand, vote, milestoneBonus.getName(), currentStreak, totalVotes);
+                        server.executeCommand(processedBonusCommand);
+
+                        if (config.isDebugMode()) {
+                            logger.info("[Debug] Executed milestone bonus command: " + processedBonusCommand);
+                        }
+                    }
+                    break; // Only award one milestone bonus per vote
                 }
             }
         }
