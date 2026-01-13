@@ -101,9 +101,9 @@ public class HytaleVoteListener extends JavaPlugin {
         // Create vote listener
         voteListener = new VoteListener(this, configManager.getConfig(), voteDataManager, pendingRewardsManager);
 
-        // Register for VoteEvent using the plugin's event registry
-        getEventRegistry().register(VoteEvent.class, voteListener::onVote);
-        getLogger().at(Level.INFO).log("Registered vote event listener");
+        // Register globally for VoteEvent (HytaleVotifier dispatches with its plugin class as key)
+        getEventRegistry().registerGlobal(VoteEvent.class, voteListener::onVote);
+        getLogger().at(Level.INFO).log("Registered vote event listener (global)");
 
         // Create player join listener for pending reward delivery
         playerJoinListener = new PlayerJoinListener(this, pendingRewardsManager);
