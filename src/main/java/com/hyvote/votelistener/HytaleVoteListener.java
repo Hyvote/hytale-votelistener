@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.plugin.PluginInit;
 import com.hypixel.hytale.common.plugin.PluginType;
 import com.hyvote.votelistener.config.ConfigManager;
+import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.listener.VoteListener;
 import com.hyvote.votifier.event.VoteEvent;
 
@@ -18,6 +19,7 @@ import java.nio.file.Path;
 public class HytaleVoteListener extends PluginBase {
 
     private ConfigManager configManager;
+    private VoteDataManager voteDataManager;
     private VoteListener voteListener;
 
     /**
@@ -41,6 +43,10 @@ public class HytaleVoteListener extends PluginBase {
         Path dataFolder = Path.of("plugins", getName());
         configManager = new ConfigManager(dataFolder, getLogger());
         configManager.loadConfig();
+
+        // Initialize and load vote data
+        voteDataManager = new VoteDataManager(dataFolder, getLogger());
+        voteDataManager.loadVoteData();
     }
 
     /**
@@ -50,6 +56,15 @@ public class HytaleVoteListener extends PluginBase {
      */
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    /**
+     * Gets the vote data manager for accessing player vote statistics.
+     *
+     * @return The VoteDataManager instance
+     */
+    public VoteDataManager getVoteDataManager() {
+        return voteDataManager;
     }
 
     /**
@@ -75,6 +90,9 @@ public class HytaleVoteListener extends PluginBase {
     public void shutdown() {
         if (voteListener != null) {
             getLogger().info("Unregistered vote event listener");
+        }
+        if (voteDataManager != null) {
+            getLogger().info("Vote data saved (immediate persistence mode)");
         }
         getLogger().info("HytaleVoteListener disabled");
     }
