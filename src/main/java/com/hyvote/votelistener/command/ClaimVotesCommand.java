@@ -99,9 +99,16 @@ public class ClaimVotesCommand extends AbstractCommand {
         int totalCommandsExecuted = 0;
         for (PendingReward reward : pendingRewards) {
             List<String> commands = reward.getCommands();
+            logger.at(Level.INFO).log("Processing reward with %d commands from service: %s",
+                    commands.size(), reward.getServiceName());
             for (String command : commands) {
-                executeCommand(command);
-                totalCommandsExecuted++;
+                logger.at(Level.INFO).log("Executing claim command: %s", command);
+                try {
+                    executeCommand(command);
+                    totalCommandsExecuted++;
+                } catch (Exception e) {
+                    logger.at(Level.SEVERE).log("Failed to execute command '%s': %s", command, e.getMessage());
+                }
             }
         }
 

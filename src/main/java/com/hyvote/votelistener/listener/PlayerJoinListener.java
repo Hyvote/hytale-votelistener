@@ -11,6 +11,8 @@ import com.hyvote.votelistener.data.PendingReward;
 import com.hyvote.votelistener.data.PendingRewardsManager;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -77,27 +79,35 @@ public class PlayerJoinListener {
         List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(lookupKey);
         int totalRewards = pendingRewards.size();
 
-        logger.at(Level.INFO).log("Delivering %d pending vote rewards to %s", totalRewards, username);
+        logger.at(Level.INFO).log("Delivering %d pending vote rewards to %s (key: %s)", totalRewards, username, lookupKey);
 
-        // Execute all commands from all pending rewards
-        int totalCommandsExecuted = 0;
-        for (PendingReward reward : pendingRewards) {
-            List<String> commands = reward.getCommands();
-            for (String command : commands) {
-                executeCommand(command);
-                totalCommandsExecuted++;
-            }
-        }
-
-        // Clear pending rewards after successful delivery
+        // Clear pending rewards first to prevent double-delivery on reconnect
         pendingRewardsManager.clearPendingRewards(lookupKey);
 
-        // Notify the player about their rewards
+        // Delay command execution to ensure player is fully connected
+        // PlayerConnectEvent fires early - give the server time to fully load the player
+        final String finalUsername = username;
+        CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(() -> {
+            int commandsExecuted = 0;
+            for (PendingReward reward : pendingRewards) {
+                List<String> commands = reward.getCommands();
+                for (String command : commands) {
+                    logger.at(Level.INFO).log("Executing pending reward command: %s", command);
+                    try {
+                        executeCommand(command);
+                        commandsExecuted++;
+                    } catch (Exception e) {
+                        logger.at(Level.SEVERE).log("Failed to execute command '%s': %s", command, e.getMessage());
+                    }
+                }
+            }
+            logger.at(Level.INFO).log("Successfully delivered %d commands from %d pending rewards to %s",
+                    commandsExecuted, totalRewards, finalUsername);
+        });
+
+        // Notify the player about their rewards (immediate)
         String message = "You received " + totalRewards + " pending vote reward"
                 + (totalRewards > 1 ? "s" : "") + "! Thank you for voting!";
         playerRef.sendMessage(Message.raw(message));
-
-        logger.at(Level.INFO).log("Successfully delivered %d commands from %d pending rewards to %s",
-                totalCommandsExecuted, totalRewards, username);
     }
 }
