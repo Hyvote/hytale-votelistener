@@ -41,6 +41,18 @@ public class Config {
     private List<RandomReward> randomRewards;
 
     /**
+     * Whether streak bonus rewards are enabled.
+     * When enabled, bonus rewards are given when players reach configured streak milestones.
+     */
+    private boolean streakBonusEnabled;
+
+    /**
+     * List of streak bonus tiers.
+     * When a player's current streak matches a tier's streakDays, the bonus is awarded.
+     */
+    private List<StreakBonus> streakBonuses;
+
+    /**
      * Creates a new Config with default values.
      */
     public Config() {
@@ -71,6 +83,31 @@ public class Config {
             "legendary",
             5.0,
             Arrays.asList("give %player% diamond 1", "say %player% got a legendary reward!")
+        ));
+
+        // Initialize streak bonus configuration
+        this.streakBonusEnabled = true;
+        this.streakBonuses = new ArrayList<>();
+
+        // 3-day streak bonus
+        this.streakBonuses.add(new StreakBonus(
+            3,
+            "3-day",
+            Arrays.asList("give %player% emerald 1")
+        ));
+
+        // 7-day (weekly) streak bonus
+        this.streakBonuses.add(new StreakBonus(
+            7,
+            "weekly",
+            Arrays.asList("give %player% diamond 2", "say %player% has a %streak%-day vote streak!")
+        ));
+
+        // 30-day (monthly) streak bonus
+        this.streakBonuses.add(new StreakBonus(
+            30,
+            "monthly",
+            Arrays.asList("give %player% diamond_block 1")
         ));
     }
 
@@ -117,5 +154,23 @@ public class Config {
      */
     public List<RandomReward> getRandomRewards() {
         return randomRewards;
+    }
+
+    /**
+     * Returns whether streak bonus rewards are enabled.
+     *
+     * @return true if streak bonuses should be given when milestones are reached
+     */
+    public boolean isStreakBonusEnabled() {
+        return streakBonusEnabled;
+    }
+
+    /**
+     * Gets the list of streak bonus tiers.
+     *
+     * @return List of StreakBonus configurations
+     */
+    public List<StreakBonus> getStreakBonuses() {
+        return streakBonuses;
     }
 }
