@@ -7,6 +7,7 @@ import com.hyvote.votelistener.config.ConfigManager;
 import com.hyvote.votelistener.data.PendingRewardsManager;
 import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.listener.PlayerJoinListener;
+import com.hyvote.votelistener.command.ClaimVotesCommand;
 import com.hyvote.votelistener.listener.VoteListener;
 import com.hyvote.votifier.event.VoteEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
@@ -26,6 +27,7 @@ public class HytaleVoteListener extends PluginBase {
     private PendingRewardsManager pendingRewardsManager;
     private VoteListener voteListener;
     private PlayerJoinListener playerJoinListener;
+    private ClaimVotesCommand claimVotesCommand;
 
     /**
      * Plugin constructor called by the server during plugin loading.
@@ -103,6 +105,11 @@ public class HytaleVoteListener extends PluginBase {
         playerJoinListener = new PlayerJoinListener(getServer(), getLogger(), pendingRewardsManager);
         getServer().getEventBus().subscribe(PlayerConnectEvent.class, playerJoinListener::onPlayerConnect);
         getLogger().info("Registered player join listener for pending reward delivery");
+
+        // Create and register /claimvotes command for manual reward claiming
+        claimVotesCommand = new ClaimVotesCommand(getServer(), getLogger(), pendingRewardsManager);
+        getServer().getCommandRegistry().register("claimvotes", claimVotesCommand);
+        getLogger().info("Registered /claimvotes command");
     }
 
     /**
@@ -116,6 +123,9 @@ public class HytaleVoteListener extends PluginBase {
         }
         if (playerJoinListener != null) {
             getLogger().info("Unregistered player join listener");
+        }
+        if (claimVotesCommand != null) {
+            getLogger().info("Unregistered /claimvotes command");
         }
         if (voteDataManager != null) {
             getLogger().info("Vote data saved (immediate persistence mode)");
