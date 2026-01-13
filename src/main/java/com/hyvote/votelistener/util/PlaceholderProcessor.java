@@ -35,19 +35,19 @@ public final class PlaceholderProcessor {
         String result = command;
 
         // Replace %player% with username
-        String username = vote.getUsername();
+        String username = vote.username();
         result = result.replace("%player%", username != null ? username : "");
 
         // Replace %service% with service name
-        String serviceName = vote.getServiceName();
+        String serviceName = vote.serviceName();
         result = result.replace("%service%", serviceName != null ? serviceName : "");
 
         // Replace %uuid% with UUID (if available)
-        String uuid = vote.getUuid();
+        String uuid = vote.uuid();
         result = result.replace("%uuid%", uuid != null ? uuid : "");
 
         // Replace %timestamp% with timestamp
-        String timestamp = vote.getTimeStamp();
+        String timestamp = vote.timestamp();
         result = result.replace("%timestamp%", timestamp != null ? timestamp : "");
 
         return result;

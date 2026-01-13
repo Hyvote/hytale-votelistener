@@ -95,9 +95,9 @@ public class VoteListener {
      */
     public void onVote(VoteEvent event) {
         Vote vote = event.getVote();
-        String uuid = vote.getUuid();
-        String username = vote.getUsername();
-        String serviceName = vote.getServiceName();
+        String uuid = vote.uuid();
+        String username = vote.username();
+        String serviceName = vote.serviceName();
 
         logger.at(Level.INFO).log("Vote received from %s for player: %s", serviceName, username);
 
