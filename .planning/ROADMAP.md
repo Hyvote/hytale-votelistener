@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Random Rewards** - Weighted random rewards with multiple tiers ✓
 - [x] **Phase 5: Vote Streak Tracking** - Consecutive daily vote tracking per player ✓
 - [x] **Phase 6: Milestone Rewards** - Every-N-votes bonus rewards ✓
-- [ ] **Phase 7: Offline Vote Storage** - Pending rewards queue with file-based persistence
+- [x] **Phase 7: Offline Vote Storage** - Pending rewards queue with file-based persistence ✓
 - [ ] **Phase 8: Reward Delivery** - Auto-delivery on login and /claimvotes command
 
 ## Phase Details
@@ -93,8 +93,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: Pending rewards queue data structure
-- [ ] 07-02: File-based persistence for pending rewards
+- [x] 07-01: Pending rewards queue data structure ✓
+- [x] 07-02: VoteListener integration for offline detection ✓
 
 ### Phase 8: Reward Delivery
 **Goal**: Auto-deliver pending rewards on player login and /claimvotes command with permissions
@@ -119,5 +119,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Random Rewards | 2/2 | Complete | 2026-01-13 |
 | 5. Vote Streak Tracking | 2/2 | Complete | 2026-01-13 |
 | 6. Milestone Rewards | 1/1 | Complete | 2026-01-13 |
-| 7. Offline Vote Storage | 0/2 | Not started | - |
+| 7. Offline Vote Storage | 2/2 | Complete | 2026-01-13 |
 | 8. Reward Delivery | 0/2 | Not started | - |
