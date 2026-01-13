@@ -3,6 +3,8 @@ package com.hyvote.votelistener.listener;
 import com.hyvote.votifier.event.VoteEvent;
 import com.hyvote.votifier.Vote;
 import com.hyvote.votelistener.config.Config;
+import com.hyvote.votelistener.config.RandomReward;
+import com.hyvote.votelistener.reward.RewardSelector;
 import com.hyvote.votelistener.util.PlaceholderProcessor;
 import com.hypixel.hytale.server.core.Server;
 import java.util.List;
@@ -52,6 +54,24 @@ public class VoteListener {
 
             if (config.isDebugMode()) {
                 logger.info("[Debug] Executed command: " + processedCommand);
+            }
+        }
+
+        // Execute random reward commands if enabled
+        if (config.isRandomRewardsEnabled()) {
+            RandomReward selectedReward = RewardSelector.select(config.getRandomRewards());
+            if (selectedReward != null) {
+                logger.info("Selected random reward: " + selectedReward.getName());
+
+                for (String rewardCommand : selectedReward.getCommands()) {
+                    String processedRewardCommand = PlaceholderProcessor.process(
+                        rewardCommand, vote, selectedReward.getName());
+                    server.executeCommand(processedRewardCommand);
+
+                    if (config.isDebugMode()) {
+                        logger.info("[Debug] Executed reward command: " + processedRewardCommand);
+                    }
+                }
             }
         }
 
