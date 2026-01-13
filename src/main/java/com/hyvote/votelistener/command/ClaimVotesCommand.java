@@ -75,14 +75,21 @@ public class ClaimVotesCommand extends AbstractCommand {
         String uuid = playerRef.getUuid().toString();
         String username = playerRef.getUsername();
 
-        // Check if player has pending rewards
-        if (!pendingRewardsManager.hasPendingRewards(uuid)) {
+        // Check if player has pending rewards (by UUID or username - offline votes use username)
+        String lookupKey = null;
+        if (pendingRewardsManager.hasPendingRewards(uuid)) {
+            lookupKey = uuid;
+        } else if (pendingRewardsManager.hasPendingRewards(username)) {
+            lookupKey = username;
+        }
+
+        if (lookupKey == null) {
             context.sendMessage(Message.raw("You have no pending vote rewards to claim"));
             return CompletableFuture.completedFuture(null);
         }
 
         // Get all pending rewards for this player
-        List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(uuid);
+        List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(lookupKey);
         int totalRewards = pendingRewards.size();
 
         logger.at(Level.INFO).log("Player %s claiming %d pending vote rewards via /claimvotes",
@@ -99,7 +106,7 @@ public class ClaimVotesCommand extends AbstractCommand {
         }
 
         // Clear pending rewards after successful delivery
-        pendingRewardsManager.clearPendingRewards(uuid);
+        pendingRewardsManager.clearPendingRewards(lookupKey);
 
         // Send success message to player
         context.sendMessage(Message.raw("Claimed " + totalRewards + " pending vote reward"

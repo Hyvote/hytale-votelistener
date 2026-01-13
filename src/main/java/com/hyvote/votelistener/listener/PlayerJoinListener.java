@@ -61,13 +61,20 @@ public class PlayerJoinListener {
         String uuid = playerRef.getUuid().toString();
         String username = playerRef.getUsername();
 
-        // Check if player has pending rewards
-        if (!pendingRewardsManager.hasPendingRewards(uuid)) {
+        // Check if player has pending rewards (by UUID or username - offline votes use username)
+        String lookupKey = null;
+        if (pendingRewardsManager.hasPendingRewards(uuid)) {
+            lookupKey = uuid;
+        } else if (pendingRewardsManager.hasPendingRewards(username)) {
+            lookupKey = username;
+        }
+
+        if (lookupKey == null) {
             return;
         }
 
         // Get all pending rewards for this player
-        List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(uuid);
+        List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(lookupKey);
         int totalRewards = pendingRewards.size();
 
         logger.at(Level.INFO).log("Delivering %d pending vote rewards to %s", totalRewards, username);
@@ -83,7 +90,7 @@ public class PlayerJoinListener {
         }
 
         // Clear pending rewards after successful delivery
-        pendingRewardsManager.clearPendingRewards(uuid);
+        pendingRewardsManager.clearPendingRewards(lookupKey);
 
         // Notify the player about their rewards
         String message = "You received " + totalRewards + " pending vote reward"
