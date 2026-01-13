@@ -71,81 +71,18 @@ public class Config {
         this.commands = new ArrayList<>();
         this.commands.add("say %player% has voted on %service%");
         this.commands.add("give %player% Weapon_Staff_Onyxium");
-        this.broadcastVote = true;
+        this.broadcastVote = false;
         this.debugMode = false;
-        this.randomRewardsEnabled = true;
+        this.randomRewardsEnabled = false;
         this.randomRewards = new ArrayList<>();
 
-        // Common tier - 70% chance
-        this.randomRewards.add(new RandomReward(
-            "common",
-            70.0,
-            Arrays.asList("give %player% Consumable_Apple 5")
-        ));
-
-        // Rare tier - 25% chance
-        this.randomRewards.add(new RandomReward(
-            "rare",
-            25.0,
-            Arrays.asList("give %player% Armor_Leather_Chest")
-        ));
-
-        // Legendary tier - 5% chance
-        this.randomRewards.add(new RandomReward(
-            "legendary",
-            5.0,
-            Arrays.asList("give %player% Weapon_Sword_Onyxium", "say %player% got a legendary reward!")
-        ));
-
         // Initialize streak bonus configuration
-        this.streakBonusEnabled = true;
+        this.streakBonusEnabled = false;
         this.streakBonuses = new ArrayList<>();
 
-        // 3-day streak bonus
-        this.streakBonuses.add(new StreakBonus(
-            3,
-            "3-day",
-            Arrays.asList("give %player% Consumable_Potion_Health")
-        ));
-
-        // 7-day (weekly) streak bonus
-        this.streakBonuses.add(new StreakBonus(
-            7,
-            "weekly",
-            Arrays.asList("give %player% Tool_Pickaxe_Iron", "say %player% has a %streak%-day vote streak!")
-        ));
-
-        // 30-day (monthly) streak bonus
-        this.streakBonuses.add(new StreakBonus(
-            30,
-            "monthly",
-            Arrays.asList("give %player% Armor_Onyxium_Full")
-        ));
-
         // Initialize milestone bonus configuration
-        this.milestoneBonusEnabled = true;
+        this.milestoneBonusEnabled = false;
         this.milestoneBonuses = new ArrayList<>();
-
-        // 10 votes milestone
-        this.milestoneBonuses.add(new MilestoneBonus(
-            10,
-            "first-ten",
-            Arrays.asList("give %player% Consumable_Potion_Health 3")
-        ));
-
-        // 50 votes milestone
-        this.milestoneBonuses.add(new MilestoneBonus(
-            50,
-            "fifty",
-            Arrays.asList("give %player% Weapon_Bow_Rare")
-        ));
-
-        // 100 votes milestone
-        this.milestoneBonuses.add(new MilestoneBonus(
-            100,
-            "century",
-            Arrays.asList("give %player% Mount_Horse_Rare", "say %player% reached %totalvotes% total votes!")
-        ));
     }
 
     /**

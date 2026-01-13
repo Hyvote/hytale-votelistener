@@ -206,14 +206,5 @@ public class VoteListener {
                     username, allCommands.size());
         }
 
-        // Handle broadcast vote setting (always executes immediately - server-wide announcement)
-        if (config.isBroadcastVote()) {
-            String broadcastCommand = "say " + username + " voted on " + serviceName + "!";
-            executeCommand(broadcastCommand);
-
-            if (config.isDebugMode()) {
-                logger.at(Level.INFO).log("[Debug] Broadcast vote: %s", broadcastCommand);
-            }
-        }
     }
 }
