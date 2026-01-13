@@ -4,6 +4,9 @@ import com.hyvote.votifier.event.VoteEvent;
 import com.hyvote.votifier.Vote;
 import com.hyvote.votelistener.config.Config;
 import com.hyvote.votelistener.config.RandomReward;
+import com.hyvote.votelistener.config.StreakBonus;
+import com.hyvote.votelistener.data.PlayerVoteData;
+import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.reward.RewardSelector;
 import com.hyvote.votelistener.util.PlaceholderProcessor;
 import com.hypixel.hytale.server.core.Server;
@@ -20,6 +23,7 @@ public class VoteListener {
     private final Server server;
     private final Logger logger;
     private final Config config;
+    private final VoteDataManager voteDataManager;
 
     /**
      * Creates a new VoteListener.
@@ -27,11 +31,13 @@ public class VoteListener {
      * @param server The server instance for executing commands
      * @param logger The logger for debug and info messages
      * @param config The configuration containing command list and settings
+     * @param voteDataManager The vote data manager for tracking streaks and statistics
      */
-    public VoteListener(Server server, Logger logger, Config config) {
+    public VoteListener(Server server, Logger logger, Config config, VoteDataManager voteDataManager) {
         this.server = server;
         this.logger = logger;
         this.config = config;
+        this.voteDataManager = voteDataManager;
     }
 
     /**
@@ -46,10 +52,15 @@ public class VoteListener {
 
         logger.info("Vote received from " + serviceName + " for player: " + username);
 
+        // Record vote and get updated player data with streak info
+        PlayerVoteData playerData = voteDataManager.recordVote(vote.getUuid(), username);
+        int currentStreak = playerData.getCurrentStreak();
+        int totalVotes = playerData.getTotalVotes();
+
         // Execute all configured commands with placeholder replacement
         List<String> commands = config.getCommands();
         for (String command : commands) {
-            String processedCommand = PlaceholderProcessor.process(command, vote);
+            String processedCommand = PlaceholderProcessor.process(command, vote, null, currentStreak, totalVotes);
             server.executeCommand(processedCommand);
 
             if (config.isDebugMode()) {
@@ -65,12 +76,32 @@ public class VoteListener {
 
                 for (String rewardCommand : selectedReward.getCommands()) {
                     String processedRewardCommand = PlaceholderProcessor.process(
-                        rewardCommand, vote, selectedReward.getName());
+                        rewardCommand, vote, selectedReward.getName(), currentStreak, totalVotes);
                     server.executeCommand(processedRewardCommand);
 
                     if (config.isDebugMode()) {
                         logger.info("[Debug] Executed reward command: " + processedRewardCommand);
                     }
+                }
+            }
+        }
+
+        // Execute streak bonus rewards if enabled
+        if (config.isStreakBonusEnabled()) {
+            for (StreakBonus streakBonus : config.getStreakBonuses()) {
+                if (currentStreak == streakBonus.getStreakDays()) {
+                    logger.info("Awarding streak bonus: " + streakBonus.getName());
+
+                    for (String bonusCommand : streakBonus.getCommands()) {
+                        String processedBonusCommand = PlaceholderProcessor.process(
+                            bonusCommand, vote, streakBonus.getName(), currentStreak, totalVotes);
+                        server.executeCommand(processedBonusCommand);
+
+                        if (config.isDebugMode()) {
+                            logger.info("[Debug] Executed streak bonus command: " + processedBonusCommand);
+                        }
+                    }
+                    break; // Only award one streak bonus per vote
                 }
             }
         }
