@@ -1,12 +1,17 @@
 package com.hyvote.votelistener.listener;
 
-import com.hypixel.hytale.server.core.Server;
+import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.command.system.CommandManager;
+import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hyvote.votelistener.HytaleVoteListener;
 import com.hyvote.votelistener.data.PendingReward;
 import com.hyvote.votelistener.data.PendingRewardsManager;
 
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Listens for player join events to deliver pending vote rewards.
@@ -17,21 +22,29 @@ import java.util.logging.Logger;
  */
 public class PlayerJoinListener {
 
-    private final Server server;
-    private final Logger logger;
+    private final HytaleVoteListener plugin;
+    private final HytaleLogger logger;
     private final PendingRewardsManager pendingRewardsManager;
 
     /**
      * Creates a new PlayerJoinListener.
      *
-     * @param server The server instance for executing commands
-     * @param logger The logger for info messages
+     * @param plugin The plugin instance
      * @param pendingRewardsManager The pending rewards manager for retrieving and clearing rewards
      */
-    public PlayerJoinListener(Server server, Logger logger, PendingRewardsManager pendingRewardsManager) {
-        this.server = server;
-        this.logger = logger;
+    public PlayerJoinListener(HytaleVoteListener plugin, PendingRewardsManager pendingRewardsManager) {
+        this.plugin = plugin;
+        this.logger = plugin.getLogger();
         this.pendingRewardsManager = pendingRewardsManager;
+    }
+
+    /**
+     * Executes a command through the command manager.
+     *
+     * @param command The command string to execute
+     */
+    private void executeCommand(String command) {
+        CommandManager.get().handleCommand((CommandSender) null, command);
     }
 
     /**
@@ -44,8 +57,9 @@ public class PlayerJoinListener {
      * @param event The player connect event
      */
     public void onPlayerConnect(PlayerConnectEvent event) {
-        String uuid = event.getPlayer().getUniqueId().toString();
-        String username = event.getPlayer().getName();
+        PlayerRef playerRef = event.getPlayerRef();
+        String uuid = playerRef.getUuid().toString();
+        String username = playerRef.getUsername();
 
         // Check if player has pending rewards
         if (!pendingRewardsManager.hasPendingRewards(uuid)) {
@@ -56,14 +70,14 @@ public class PlayerJoinListener {
         List<PendingReward> pendingRewards = pendingRewardsManager.getPendingRewards(uuid);
         int totalRewards = pendingRewards.size();
 
-        logger.info("Delivering " + totalRewards + " pending vote rewards to " + username);
+        logger.at(Level.INFO).log("Delivering %d pending vote rewards to %s", totalRewards, username);
 
         // Execute all commands from all pending rewards
         int totalCommandsExecuted = 0;
         for (PendingReward reward : pendingRewards) {
             List<String> commands = reward.getCommands();
             for (String command : commands) {
-                server.executeCommand(command);
+                executeCommand(command);
                 totalCommandsExecuted++;
             }
         }
@@ -72,11 +86,11 @@ public class PlayerJoinListener {
         pendingRewardsManager.clearPendingRewards(uuid);
 
         // Notify the player about their rewards
-        String playerMessage = "tellraw " + username + " {\"text\":\"You received " + totalRewards
-                + " pending vote reward" + (totalRewards > 1 ? "s" : "") + "! Thank you for voting!\",\"color\":\"green\"}";
-        server.executeCommand(playerMessage);
+        String message = "You received " + totalRewards + " pending vote reward"
+                + (totalRewards > 1 ? "s" : "") + "! Thank you for voting!";
+        playerRef.sendMessage(Message.raw(message));
 
-        logger.info("Successfully delivered " + totalCommandsExecuted + " commands from "
-                + totalRewards + " pending rewards to " + username);
+        logger.at(Level.INFO).log("Successfully delivered %d commands from %d pending rewards to %s",
+                totalCommandsExecuted, totalRewards, username);
     }
 }

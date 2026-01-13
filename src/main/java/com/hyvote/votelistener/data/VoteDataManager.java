@@ -3,6 +3,7 @@ package com.hyvote.votelistener.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.hypixel.hytale.logger.HytaleLogger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Manages player vote data persistence and streak calculation.
@@ -26,7 +27,7 @@ public class VoteDataManager {
     private static final String VOTE_DATA_FILE_NAME = "vote-data.json";
 
     private final Path pluginDataFolder;
-    private final Logger logger;
+    private final HytaleLogger logger;
     private final Gson gson;
     private Map<String, PlayerVoteData> voteDataMap;
 
@@ -36,7 +37,7 @@ public class VoteDataManager {
      * @param pluginDataFolder The plugin's data directory for storing vote-data.json
      * @param logger The logger for info and error messages
      */
-    public VoteDataManager(Path pluginDataFolder, Logger logger) {
+    public VoteDataManager(Path pluginDataFolder, HytaleLogger logger) {
         this.pluginDataFolder = pluginDataFolder;
         this.logger = logger;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
@@ -52,7 +53,7 @@ public class VoteDataManager {
         Path voteDataPath = pluginDataFolder.resolve(VOTE_DATA_FILE_NAME);
 
         if (!Files.exists(voteDataPath)) {
-            logger.info("Vote data file not found, creating empty vote-data.json");
+            logger.at(Level.INFO).log("Vote data file not found, creating empty vote-data.json");
             saveVoteData();
             return;
         }
@@ -64,13 +65,13 @@ public class VoteDataManager {
 
             if (loadedData != null) {
                 voteDataMap = loadedData;
-                logger.info("Loaded vote data for " + voteDataMap.size() + " players from " + voteDataPath);
+                logger.at(Level.INFO).log("Loaded vote data for " + voteDataMap.size() + " players from " + voteDataPath);
             } else {
                 voteDataMap = new HashMap<>();
-                logger.info("Vote data file was empty, initialized empty map");
+                logger.at(Level.INFO).log("Vote data file was empty, initialized empty map");
             }
         } catch (IOException e) {
-            logger.severe("Failed to load vote-data.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to load vote-data.json: " + e.getMessage());
             voteDataMap = new HashMap<>();
         }
     }
@@ -84,14 +85,14 @@ public class VoteDataManager {
         try {
             if (!Files.exists(pluginDataFolder)) {
                 Files.createDirectories(pluginDataFolder);
-                logger.info("Created plugin data folder: " + pluginDataFolder);
+                logger.at(Level.INFO).log("Created plugin data folder: " + pluginDataFolder);
             }
 
             Path voteDataPath = pluginDataFolder.resolve(VOTE_DATA_FILE_NAME);
             String json = gson.toJson(voteDataMap);
             Files.writeString(voteDataPath, json);
         } catch (IOException e) {
-            logger.severe("Failed to save vote-data.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to save vote-data.json: " + e.getMessage());
         }
     }
 
@@ -167,7 +168,7 @@ public class VoteDataManager {
         // Save immediately for persistence
         saveVoteData();
 
-        logger.info("Recorded vote for " + username + " - Total: " + data.getTotalVotes()
+        logger.at(Level.INFO).log("Recorded vote for " + username + " - Total: " + data.getTotalVotes()
                 + ", Streak: " + data.getCurrentStreak());
 
         return data;

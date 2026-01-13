@@ -1,0 +1,26 @@
+# Build output
+target/
+*.class
+
+# Maven
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Dependencies (local JARs for compilation)
+HytaleServer.jar
+HytaleVotifier.jar
+
+# Build artifacts (use releases for distribution)
+*.jar
+!src/**/*.jar
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Decompiled sources
+com/

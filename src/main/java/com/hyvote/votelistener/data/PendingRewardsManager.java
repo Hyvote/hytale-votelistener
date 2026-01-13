@@ -3,6 +3,7 @@ package com.hyvote.votelistener.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.hypixel.hytale.logger.HytaleLogger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Manages pending rewards for offline players with JSON persistence.
@@ -26,7 +27,7 @@ public class PendingRewardsManager {
     private static final String PENDING_REWARDS_FILE_NAME = "pending-rewards.json";
 
     private final Path pluginDataFolder;
-    private final Logger logger;
+    private final HytaleLogger logger;
     private final Gson gson;
     private Map<String, List<PendingReward>> pendingRewardsMap;
 
@@ -36,7 +37,7 @@ public class PendingRewardsManager {
      * @param pluginDataFolder The plugin's data directory for storing pending-rewards.json
      * @param logger The logger for info and error messages
      */
-    public PendingRewardsManager(Path pluginDataFolder, Logger logger) {
+    public PendingRewardsManager(Path pluginDataFolder, HytaleLogger logger) {
         this.pluginDataFolder = pluginDataFolder;
         this.logger = logger;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
@@ -52,7 +53,7 @@ public class PendingRewardsManager {
         Path pendingRewardsPath = pluginDataFolder.resolve(PENDING_REWARDS_FILE_NAME);
 
         if (!Files.exists(pendingRewardsPath)) {
-            logger.info("Pending rewards file not found, creating empty pending-rewards.json");
+            logger.at(Level.INFO).log("Pending rewards file not found, creating empty pending-rewards.json");
             savePendingRewards();
             return;
         }
@@ -67,14 +68,14 @@ public class PendingRewardsManager {
                 int totalPending = pendingRewardsMap.values().stream()
                         .mapToInt(List::size)
                         .sum();
-                logger.info("Loaded pending rewards for " + pendingRewardsMap.size()
+                logger.at(Level.INFO).log("Loaded pending rewards for " + pendingRewardsMap.size()
                         + " players (" + totalPending + " total rewards) from " + pendingRewardsPath);
             } else {
                 pendingRewardsMap = new HashMap<>();
-                logger.info("Pending rewards file was empty, initialized empty map");
+                logger.at(Level.INFO).log("Pending rewards file was empty, initialized empty map");
             }
         } catch (IOException e) {
-            logger.severe("Failed to load pending-rewards.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to load pending-rewards.json: " + e.getMessage());
             pendingRewardsMap = new HashMap<>();
         }
     }
@@ -88,14 +89,14 @@ public class PendingRewardsManager {
         try {
             if (!Files.exists(pluginDataFolder)) {
                 Files.createDirectories(pluginDataFolder);
-                logger.info("Created plugin data folder: " + pluginDataFolder);
+                logger.at(Level.INFO).log("Created plugin data folder: " + pluginDataFolder);
             }
 
             Path pendingRewardsPath = pluginDataFolder.resolve(PENDING_REWARDS_FILE_NAME);
             String json = gson.toJson(pendingRewardsMap);
             Files.writeString(pendingRewardsPath, json);
         } catch (IOException e) {
-            logger.severe("Failed to save pending-rewards.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to save pending-rewards.json: " + e.getMessage());
         }
     }
 
@@ -112,7 +113,7 @@ public class PendingRewardsManager {
         List<PendingReward> rewards = pendingRewardsMap.computeIfAbsent(uuid, k -> new ArrayList<>());
         rewards.add(reward);
         savePendingRewards();
-        logger.info("Added pending reward for " + reward.getUsername()
+        logger.at(Level.INFO).log("Added pending reward for " + reward.getUsername()
                 + " from " + reward.getServiceName() + " (" + reward.getCommands().size() + " commands)");
     }
 
@@ -138,7 +139,7 @@ public class PendingRewardsManager {
         List<PendingReward> removed = pendingRewardsMap.remove(uuid);
         if (removed != null && !removed.isEmpty()) {
             savePendingRewards();
-            logger.info("Cleared " + removed.size() + " pending rewards for player " + uuid);
+            logger.at(Level.INFO).log("Cleared " + removed.size() + " pending rewards for player " + uuid);
         }
     }
 

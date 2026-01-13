@@ -1,7 +1,13 @@
 package com.hyvote.votelistener.listener;
 
+import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.command.system.CommandManager;
+import com.hypixel.hytale.server.core.command.system.CommandSender;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hyvote.votifier.event.VoteEvent;
 import com.hyvote.votifier.Vote;
+import com.hyvote.votelistener.HytaleVoteListener;
 import com.hyvote.votelistener.config.Config;
 import com.hyvote.votelistener.config.MilestoneBonus;
 import com.hyvote.votelistener.config.RandomReward;
@@ -12,10 +18,11 @@ import com.hyvote.votelistener.data.PlayerVoteData;
 import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.reward.RewardSelector;
 import com.hyvote.votelistener.util.PlaceholderProcessor;
-import com.hypixel.hytale.server.core.Server;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Optional;
+import java.util.logging.Level;
 
 /**
  * Listens for vote events from HytaleVotifier and handles reward delivery.
@@ -24,8 +31,8 @@ import java.util.logging.Logger;
  * when a player votes on a voting site.
  */
 public class VoteListener {
-    private final Server server;
-    private final Logger logger;
+    private final HytaleVoteListener plugin;
+    private final HytaleLogger logger;
     private final Config config;
     private final VoteDataManager voteDataManager;
     private final PendingRewardsManager pendingRewardsManager;
@@ -33,16 +40,15 @@ public class VoteListener {
     /**
      * Creates a new VoteListener.
      *
-     * @param server The server instance for executing commands
-     * @param logger The logger for debug and info messages
+     * @param plugin The plugin instance
      * @param config The configuration containing command list and settings
      * @param voteDataManager The vote data manager for tracking streaks and statistics
      * @param pendingRewardsManager The pending rewards manager for offline player rewards
      */
-    public VoteListener(Server server, Logger logger, Config config, VoteDataManager voteDataManager,
+    public VoteListener(HytaleVoteListener plugin, Config config, VoteDataManager voteDataManager,
                         PendingRewardsManager pendingRewardsManager) {
-        this.server = server;
-        this.logger = logger;
+        this.plugin = plugin;
+        this.logger = plugin.getLogger();
         this.config = config;
         this.voteDataManager = voteDataManager;
         this.pendingRewardsManager = pendingRewardsManager;
@@ -55,9 +61,31 @@ public class VoteListener {
      * @return true if the player is online, false otherwise
      */
     private boolean isPlayerOnline(String username) {
-        // Try to find player by name in the online players list
-        return server.getOnlinePlayers().stream()
-                .anyMatch(player -> player.getName().equalsIgnoreCase(username));
+        // Check if player is connected via universe
+        return Universe.get().getPlayers().stream()
+                .anyMatch(ref -> ref.getUsername().equalsIgnoreCase(username));
+    }
+
+    /**
+     * Finds a PlayerRef by username for online players.
+     *
+     * @param username The username to find
+     * @return Optional containing the PlayerRef if online
+     */
+    private Optional<PlayerRef> findPlayerRef(String username) {
+        return Universe.get().getPlayers().stream()
+                .filter(ref -> ref.getUsername().equalsIgnoreCase(username))
+                .findFirst();
+    }
+
+    /**
+     * Executes a command through the command manager.
+     *
+     * @param command The command string to execute
+     */
+    private void executeCommand(String command) {
+        // Use console command execution
+        CommandManager.get().handleCommand((CommandSender) null, command);
     }
 
     /**
@@ -71,7 +99,7 @@ public class VoteListener {
         String username = vote.getUsername();
         String serviceName = vote.getServiceName();
 
-        logger.info("Vote received from " + serviceName + " for player: " + username);
+        logger.at(Level.INFO).log("Vote received from %s for player: %s", serviceName, username);
 
         // Record vote and get updated player data with streak info
         PlayerVoteData playerData = voteDataManager.recordVote(uuid, username);
@@ -88,7 +116,7 @@ public class VoteListener {
             allCommands.add(processedCommand);
 
             if (config.isDebugMode()) {
-                logger.info("[Debug] Queued command: " + processedCommand);
+                logger.at(Level.INFO).log("[Debug] Queued command: %s", processedCommand);
             }
         }
 
@@ -96,7 +124,7 @@ public class VoteListener {
         if (config.isRandomRewardsEnabled()) {
             RandomReward selectedReward = RewardSelector.select(config.getRandomRewards());
             if (selectedReward != null) {
-                logger.info("Selected random reward: " + selectedReward.getName());
+                logger.at(Level.INFO).log("Selected random reward: %s", selectedReward.getName());
 
                 for (String rewardCommand : selectedReward.getCommands()) {
                     String processedRewardCommand = PlaceholderProcessor.process(
@@ -104,7 +132,7 @@ public class VoteListener {
                     allCommands.add(processedRewardCommand);
 
                     if (config.isDebugMode()) {
-                        logger.info("[Debug] Queued reward command: " + processedRewardCommand);
+                        logger.at(Level.INFO).log("[Debug] Queued reward command: %s", processedRewardCommand);
                     }
                 }
             }
@@ -114,7 +142,7 @@ public class VoteListener {
         if (config.isStreakBonusEnabled()) {
             for (StreakBonus streakBonus : config.getStreakBonuses()) {
                 if (currentStreak == streakBonus.getStreakDays()) {
-                    logger.info("Awarding streak bonus: " + streakBonus.getName());
+                    logger.at(Level.INFO).log("Awarding streak bonus: %s", streakBonus.getName());
 
                     for (String bonusCommand : streakBonus.getCommands()) {
                         String processedBonusCommand = PlaceholderProcessor.process(
@@ -122,7 +150,7 @@ public class VoteListener {
                         allCommands.add(processedBonusCommand);
 
                         if (config.isDebugMode()) {
-                            logger.info("[Debug] Queued streak bonus command: " + processedBonusCommand);
+                            logger.at(Level.INFO).log("[Debug] Queued streak bonus command: %s", processedBonusCommand);
                         }
                     }
                     break; // Only award one streak bonus per vote
@@ -134,7 +162,7 @@ public class VoteListener {
         if (config.isMilestoneBonusEnabled()) {
             for (MilestoneBonus milestoneBonus : config.getMilestoneBonuses()) {
                 if (totalVotes == milestoneBonus.getVotesRequired()) {
-                    logger.info("Awarding milestone bonus: " + milestoneBonus.getName());
+                    logger.at(Level.INFO).log("Awarding milestone bonus: %s", milestoneBonus.getName());
 
                     for (String bonusCommand : milestoneBonus.getCommands()) {
                         String processedBonusCommand = PlaceholderProcessor.process(
@@ -142,7 +170,7 @@ public class VoteListener {
                         allCommands.add(processedBonusCommand);
 
                         if (config.isDebugMode()) {
-                            logger.info("[Debug] Queued milestone bonus command: " + processedBonusCommand);
+                            logger.at(Level.INFO).log("[Debug] Queued milestone bonus command: %s", processedBonusCommand);
                         }
                     }
                     break; // Only award one milestone bonus per vote
@@ -154,10 +182,10 @@ public class VoteListener {
         if (isPlayerOnline(username)) {
             // Player is online - execute all commands immediately
             for (String cmd : allCommands) {
-                server.executeCommand(cmd);
+                executeCommand(cmd);
 
                 if (config.isDebugMode()) {
-                    logger.info("[Debug] Executed command: " + cmd);
+                    logger.at(Level.INFO).log("[Debug] Executed command: %s", cmd);
                 }
             }
         } else {
@@ -170,16 +198,17 @@ public class VoteListener {
                 allCommands
             );
             pendingRewardsManager.addPendingReward(uuid, pendingReward);
-            logger.info("Player " + username + " is offline, queued " + allCommands.size() + " reward commands for later delivery");
+            logger.at(Level.INFO).log("Player %s is offline, queued %d reward commands for later delivery",
+                    username, allCommands.size());
         }
 
         // Handle broadcast vote setting (always executes immediately - server-wide announcement)
         if (config.isBroadcastVote()) {
             String broadcastCommand = "say " + username + " voted on " + serviceName + "!";
-            server.executeCommand(broadcastCommand);
+            executeCommand(broadcastCommand);
 
             if (config.isDebugMode()) {
-                logger.info("[Debug] Broadcast vote: " + broadcastCommand);
+                logger.at(Level.INFO).log("[Debug] Broadcast vote: %s", broadcastCommand);
             }
         }
     }

@@ -2,11 +2,12 @@ package com.hyvote.votelistener.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.hypixel.hytale.logger.HytaleLogger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Manages loading and saving of plugin configuration.
@@ -19,7 +20,7 @@ public class ConfigManager {
     private static final String CONFIG_FILE_NAME = "config.json";
 
     private final Path pluginDataFolder;
-    private final Logger logger;
+    private final HytaleLogger logger;
     private final Gson gson;
     private Config config;
 
@@ -29,7 +30,7 @@ public class ConfigManager {
      * @param pluginDataFolder The plugin's data directory (e.g., plugins/HytaleVoteListener/)
      * @param logger The logger for info and error messages
      */
-    public ConfigManager(Path pluginDataFolder, Logger logger) {
+    public ConfigManager(Path pluginDataFolder, HytaleLogger logger) {
         this.pluginDataFolder = pluginDataFolder;
         this.logger = logger;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
@@ -46,16 +47,16 @@ public class ConfigManager {
         Path configPath = pluginDataFolder.resolve(CONFIG_FILE_NAME);
 
         if (!Files.exists(configPath)) {
-            logger.info("Config file not found, creating default config.json");
+            logger.at(Level.INFO).log("Config file not found, creating default config.json");
             saveDefaultConfig();
         }
 
         try {
             String json = Files.readString(configPath);
             config = gson.fromJson(json, Config.class);
-            logger.info("Loaded configuration from " + configPath);
+            logger.at(Level.INFO).log("Loaded configuration from " + configPath);
         } catch (IOException e) {
-            logger.severe("Failed to load config.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to load config.json: " + e.getMessage());
             config = new Config(); // Fallback to defaults
         }
 
@@ -72,16 +73,16 @@ public class ConfigManager {
         try {
             if (!Files.exists(pluginDataFolder)) {
                 Files.createDirectories(pluginDataFolder);
-                logger.info("Created plugin data folder: " + pluginDataFolder);
+                logger.at(Level.INFO).log("Created plugin data folder: " + pluginDataFolder);
             }
 
             Path configPath = pluginDataFolder.resolve(CONFIG_FILE_NAME);
             Config defaultConfig = new Config();
             String json = gson.toJson(defaultConfig);
             Files.writeString(configPath, json);
-            logger.info("Saved default config.json");
+            logger.at(Level.INFO).log("Saved default config.json");
         } catch (IOException e) {
-            logger.severe("Failed to save default config.json: " + e.getMessage());
+            logger.at(Level.SEVERE).log("Failed to save default config.json: " + e.getMessage());
         }
     }
 
