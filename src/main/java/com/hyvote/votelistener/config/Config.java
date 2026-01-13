@@ -53,6 +53,18 @@ public class Config {
     private List<StreakBonus> streakBonuses;
 
     /**
+     * Whether milestone bonus rewards are enabled.
+     * When enabled, bonus rewards are given when players reach configured total vote milestones.
+     */
+    private boolean milestoneBonusEnabled;
+
+    /**
+     * List of milestone bonus tiers.
+     * When a player's total votes matches a tier's votesRequired, the bonus is awarded.
+     */
+    private List<MilestoneBonus> milestoneBonuses;
+
+    /**
      * Creates a new Config with default values.
      */
     public Config() {
@@ -108,6 +120,31 @@ public class Config {
             30,
             "monthly",
             Arrays.asList("give %player% diamond_block 1")
+        ));
+
+        // Initialize milestone bonus configuration
+        this.milestoneBonusEnabled = true;
+        this.milestoneBonuses = new ArrayList<>();
+
+        // 10 votes milestone
+        this.milestoneBonuses.add(new MilestoneBonus(
+            10,
+            "first-ten",
+            Arrays.asList("give %player% emerald 3")
+        ));
+
+        // 50 votes milestone
+        this.milestoneBonuses.add(new MilestoneBonus(
+            50,
+            "fifty",
+            Arrays.asList("give %player% diamond 3")
+        ));
+
+        // 100 votes milestone
+        this.milestoneBonuses.add(new MilestoneBonus(
+            100,
+            "century",
+            Arrays.asList("give %player% diamond_block 1", "say %player% reached %totalvotes% total votes!")
         ));
     }
 
@@ -172,5 +209,23 @@ public class Config {
      */
     public List<StreakBonus> getStreakBonuses() {
         return streakBonuses;
+    }
+
+    /**
+     * Returns whether milestone bonus rewards are enabled.
+     *
+     * @return true if milestone bonuses should be given when total vote milestones are reached
+     */
+    public boolean isMilestoneBonusEnabled() {
+        return milestoneBonusEnabled;
+    }
+
+    /**
+     * Gets the list of milestone bonus tiers.
+     *
+     * @return List of MilestoneBonus configurations
+     */
+    public List<MilestoneBonus> getMilestoneBonuses() {
+        return milestoneBonuses;
     }
 }
