@@ -6,8 +6,10 @@ import com.hypixel.hytale.common.plugin.PluginType;
 import com.hyvote.votelistener.config.ConfigManager;
 import com.hyvote.votelistener.data.PendingRewardsManager;
 import com.hyvote.votelistener.data.VoteDataManager;
+import com.hyvote.votelistener.listener.PlayerJoinListener;
 import com.hyvote.votelistener.listener.VoteListener;
 import com.hyvote.votifier.event.VoteEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 
 import java.nio.file.Path;
 
@@ -23,6 +25,7 @@ public class HytaleVoteListener extends PluginBase {
     private VoteDataManager voteDataManager;
     private PendingRewardsManager pendingRewardsManager;
     private VoteListener voteListener;
+    private PlayerJoinListener playerJoinListener;
 
     /**
      * Plugin constructor called by the server during plugin loading.
@@ -95,6 +98,11 @@ public class HytaleVoteListener extends PluginBase {
         voteListener = new VoteListener(getServer(), getLogger(), configManager.getConfig(), voteDataManager, pendingRewardsManager);
         getServer().getEventBus().subscribe(VoteEvent.class, voteListener::onVote);
         getLogger().info("Registered vote event listener");
+
+        // Create and register player join listener for pending reward delivery
+        playerJoinListener = new PlayerJoinListener(getServer(), getLogger(), pendingRewardsManager);
+        getServer().getEventBus().subscribe(PlayerConnectEvent.class, playerJoinListener::onPlayerConnect);
+        getLogger().info("Registered player join listener for pending reward delivery");
     }
 
     /**
@@ -105,6 +113,9 @@ public class HytaleVoteListener extends PluginBase {
     public void shutdown() {
         if (voteListener != null) {
             getLogger().info("Unregistered vote event listener");
+        }
+        if (playerJoinListener != null) {
+            getLogger().info("Unregistered player join listener");
         }
         if (voteDataManager != null) {
             getLogger().info("Vote data saved (immediate persistence mode)");
