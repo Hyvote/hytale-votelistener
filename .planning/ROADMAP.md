@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Project setup with Maven, manifest.json, main plugin class ✓
 - [x] **Phase 2: Vote Event Listener** - Listen to VoteEvent from HytaleVotifier, basic command execution ✓
 - [x] **Phase 3: Configuration System** - JSON config with command placeholders ✓
-- [ ] **Phase 4: Random Rewards** - Weighted random rewards with multiple tiers
+- [x] **Phase 4: Random Rewards** - Weighted random rewards with multiple tiers ✓
 - [ ] **Phase 5: Vote Streak Tracking** - Consecutive daily vote tracking per player
 - [ ] **Phase 6: Milestone Rewards** - Every-N-votes bonus rewards
 - [ ] **Phase 7: Offline Vote Storage** - Pending rewards queue with file-based persistence
@@ -64,8 +64,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: Random reward configuration and selection logic
-- [ ] 04-02: Tiered rewards with weighted chances
+- [x] 04-01: Random reward configuration and selection logic ✓
+- [x] 04-02: Tiered rewards with weighted chances ✓
 
 ### Phase 5: Vote Streak Tracking
 **Goal**: Track consecutive daily votes per player with streak count
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Foundation | 2/2 | Complete | 2026-01-13 |
 | 2. Vote Event Listener | 1/1 | Complete | 2026-01-13 |
 | 3. Configuration System | 2/2 | Complete | 2026-01-13 |
-| 4. Random Rewards | 0/2 | Not started | - |
+| 4. Random Rewards | 2/2 | Complete | 2026-01-13 |
 | 5. Vote Streak Tracking | 0/2 | Not started | - |
 | 6. Milestone Rewards | 0/1 | Not started | - |
 | 7. Offline Vote Storage | 0/2 | Not started | - |
