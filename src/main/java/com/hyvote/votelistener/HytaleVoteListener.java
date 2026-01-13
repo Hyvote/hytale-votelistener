@@ -91,8 +91,8 @@ public class HytaleVoteListener extends PluginBase {
         String version = getManifest().getVersion();
         getLogger().info("HytaleVoteListener v" + version + " enabled");
 
-        // Create and register vote event listener with config and vote data manager
-        voteListener = new VoteListener(getServer(), getLogger(), configManager.getConfig(), voteDataManager);
+        // Create and register vote event listener with config, data managers for vote tracking and offline rewards
+        voteListener = new VoteListener(getServer(), getLogger(), configManager.getConfig(), voteDataManager, pendingRewardsManager);
         getServer().getEventBus().subscribe(VoteEvent.class, voteListener::onVote);
         getLogger().info("Registered vote event listener");
     }
