@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.plugin.PluginInit;
 import com.hypixel.hytale.common.plugin.PluginType;
 import com.hyvote.votelistener.config.ConfigManager;
+import com.hyvote.votelistener.data.PendingRewardsManager;
 import com.hyvote.votelistener.data.VoteDataManager;
 import com.hyvote.votelistener.listener.VoteListener;
 import com.hyvote.votifier.event.VoteEvent;
@@ -20,6 +21,7 @@ public class HytaleVoteListener extends PluginBase {
 
     private ConfigManager configManager;
     private VoteDataManager voteDataManager;
+    private PendingRewardsManager pendingRewardsManager;
     private VoteListener voteListener;
 
     /**
@@ -47,6 +49,10 @@ public class HytaleVoteListener extends PluginBase {
         // Initialize and load vote data
         voteDataManager = new VoteDataManager(dataFolder, getLogger());
         voteDataManager.loadVoteData();
+
+        // Initialize and load pending rewards
+        pendingRewardsManager = new PendingRewardsManager(dataFolder, getLogger());
+        pendingRewardsManager.loadPendingRewards();
     }
 
     /**
@@ -65,6 +71,15 @@ public class HytaleVoteListener extends PluginBase {
      */
     public VoteDataManager getVoteDataManager() {
         return voteDataManager;
+    }
+
+    /**
+     * Gets the pending rewards manager for handling offline player rewards.
+     *
+     * @return The PendingRewardsManager instance
+     */
+    public PendingRewardsManager getPendingRewardsManager() {
+        return pendingRewardsManager;
     }
 
     /**
@@ -93,6 +108,9 @@ public class HytaleVoteListener extends PluginBase {
         }
         if (voteDataManager != null) {
             getLogger().info("Vote data saved (immediate persistence mode)");
+        }
+        if (pendingRewardsManager != null) {
+            getLogger().info("Pending rewards data saved (immediate persistence mode)");
         }
         getLogger().info("HytaleVoteListener disabled");
     }
