@@ -52,4 +52,25 @@ public final class PlaceholderProcessor {
 
         return result;
     }
+
+    /**
+     * Processes placeholders in a command string, including reward name placeholder.
+     *
+     * <p>This overloaded method first calls the standard process method for vote data,
+     * then additionally replaces %reward% with the provided reward name.
+     *
+     * @param command The command string containing placeholders
+     * @param vote The vote object containing replacement values
+     * @param rewardName The name of the reward tier to replace %reward% placeholder
+     * @return The processed command with all placeholders replaced
+     */
+    public static String process(String command, Vote vote, String rewardName) {
+        // First process standard vote placeholders
+        String result = process(command, vote);
+
+        // Replace %reward% with reward name
+        result = result.replace("%reward%", rewardName != null ? rewardName : "");
+
+        return result;
+    }
 }
