@@ -95,9 +95,13 @@ public class VoteListener {
      */
     public void onVote(VoteEvent event) {
         Vote vote = event.getVote();
-        String uuid = vote.uuid();
         String username = vote.username();
         String serviceName = vote.serviceName();
+
+        // Look up UUID from online player, or use username as fallback key
+        String uuid = findPlayerRef(username)
+                .map(ref -> ref.getUuid().toString())
+                .orElse(username);
 
         logger.at(Level.INFO).log("Vote received from %s for player: %s", serviceName, username);
 
@@ -112,7 +116,7 @@ public class VoteListener {
         // Add base commands with placeholder replacement
         List<String> commands = config.getCommands();
         for (String command : commands) {
-            String processedCommand = PlaceholderProcessor.process(command, vote, null, currentStreak, totalVotes);
+            String processedCommand = PlaceholderProcessor.process(command, vote, null, currentStreak, totalVotes, uuid);
             allCommands.add(processedCommand);
 
             if (config.isDebugMode()) {
@@ -128,7 +132,7 @@ public class VoteListener {
 
                 for (String rewardCommand : selectedReward.getCommands()) {
                     String processedRewardCommand = PlaceholderProcessor.process(
-                        rewardCommand, vote, selectedReward.getName(), currentStreak, totalVotes);
+                        rewardCommand, vote, selectedReward.getName(), currentStreak, totalVotes, uuid);
                     allCommands.add(processedRewardCommand);
 
                     if (config.isDebugMode()) {
@@ -146,7 +150,7 @@ public class VoteListener {
 
                     for (String bonusCommand : streakBonus.getCommands()) {
                         String processedBonusCommand = PlaceholderProcessor.process(
-                            bonusCommand, vote, streakBonus.getName(), currentStreak, totalVotes);
+                            bonusCommand, vote, streakBonus.getName(), currentStreak, totalVotes, uuid);
                         allCommands.add(processedBonusCommand);
 
                         if (config.isDebugMode()) {
@@ -166,7 +170,7 @@ public class VoteListener {
 
                     for (String bonusCommand : milestoneBonus.getCommands()) {
                         String processedBonusCommand = PlaceholderProcessor.process(
-                            bonusCommand, vote, milestoneBonus.getName(), currentStreak, totalVotes);
+                            bonusCommand, vote, milestoneBonus.getName(), currentStreak, totalVotes, uuid);
                         allCommands.add(processedBonusCommand);
 
                         if (config.isDebugMode()) {
