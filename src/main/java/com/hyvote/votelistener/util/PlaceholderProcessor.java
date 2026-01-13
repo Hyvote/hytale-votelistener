@@ -45,9 +45,8 @@ public final class PlaceholderProcessor {
         // Note: %uuid% placeholder handled separately - Vote record doesn't contain UUID
         // The calling code should pass UUID if needed via a different overload
 
-        // Replace %timestamp% with timestamp
-        String timestamp = vote.timestamp();
-        result = result.replace("%timestamp%", timestamp != null ? timestamp : "");
+        // Replace %timestamp% with timestamp (long converted to String)
+        result = result.replace("%timestamp%", String.valueOf(vote.timestamp()));
 
         return result;
     }
