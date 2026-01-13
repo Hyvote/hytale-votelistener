@@ -3,8 +3,11 @@ package com.hyvote.votelistener;
 import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.plugin.PluginInit;
 import com.hypixel.hytale.common.plugin.PluginType;
+import com.hyvote.votelistener.config.ConfigManager;
 import com.hyvote.votelistener.listener.VoteListener;
 import com.hyvote.votifier.event.VoteEvent;
+
+import java.nio.file.Path;
 
 /**
  * HytaleVoteListener - Vote reward plugin for Hytale servers.
@@ -14,6 +17,7 @@ import com.hyvote.votifier.event.VoteEvent;
  */
 public class HytaleVoteListener extends PluginBase {
 
+    private ConfigManager configManager;
     private VoteListener voteListener;
 
     /**
@@ -32,6 +36,20 @@ public class HytaleVoteListener extends PluginBase {
     @Override
     public void setup() {
         getLogger().info("Setting up HytaleVoteListener...");
+
+        // Initialize and load configuration
+        Path dataFolder = Path.of("plugins", getName());
+        configManager = new ConfigManager(dataFolder, getLogger());
+        configManager.loadConfig();
+    }
+
+    /**
+     * Gets the configuration manager for accessing plugin settings.
+     *
+     * @return The ConfigManager instance
+     */
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
     /**
