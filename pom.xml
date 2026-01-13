@@ -28,6 +28,15 @@
             <systemPath>${project.basedir}/HytaleServer.jar</systemPath>
         </dependency>
 
+        <!-- HytaleVotifier - provides VoteEvent and Vote classes -->
+        <dependency>
+            <groupId>com.hyvote</groupId>
+            <artifactId>hytale-votifier</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/HytaleVotifier.jar</systemPath>
+        </dependency>
+
         <!-- GSON for JSON config parsing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
