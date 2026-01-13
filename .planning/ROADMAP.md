@@ -17,7 +17,7 @@ None
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project setup with Maven, manifest.json, main plugin class ✓
-- [ ] **Phase 2: Vote Event Listener** - Listen to VoteEvent from HytaleVotifier, basic command execution
+- [x] **Phase 2: Vote Event Listener** - Listen to VoteEvent from HytaleVotifier, basic command execution ✓
 - [ ] **Phase 3: Configuration System** - JSON config with command placeholders
 - [ ] **Phase 4: Random Rewards** - Weighted random rewards with multiple tiers
 - [ ] **Phase 5: Vote Streak Tracking** - Consecutive daily vote tracking per player
@@ -45,7 +45,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: VoteEvent listener registration and basic handling
+- [x] 02-01: VoteEvent listener registration and basic handling ✓
 
 ### Phase 3: Configuration System
 **Goal**: JSON configuration file with command lists and placeholder support (%player%, %service%, %uuid%)
@@ -114,7 +114,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-13 |
-| 2. Vote Event Listener | 0/1 | Not started | - |
+| 2. Vote Event Listener | 1/1 | Complete | 2026-01-13 |
 | 3. Configuration System | 0/2 | Not started | - |
 | 4. Random Rewards | 0/2 | Not started | - |
 | 5. Vote Streak Tracking | 0/2 | Not started | - |
