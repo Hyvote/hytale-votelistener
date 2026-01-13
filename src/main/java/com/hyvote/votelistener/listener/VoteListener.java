@@ -2,7 +2,7 @@ package com.hyvote.votelistener.listener;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.command.system.CommandManager;
-import com.hypixel.hytale.server.core.command.system.CommandSender;
+import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import org.hyvote.plugins.votifier.event.VoteEvent;
@@ -85,7 +85,7 @@ public class VoteListener {
      */
     private void executeCommand(String command) {
         // Use console command execution
-        CommandManager.get().handleCommand((CommandSender) null, command);
+        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, command);
     }
 
     /**

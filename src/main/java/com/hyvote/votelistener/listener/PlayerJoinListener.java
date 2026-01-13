@@ -3,7 +3,7 @@ package com.hyvote.votelistener.listener;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandManager;
-import com.hypixel.hytale.server.core.command.system.CommandSender;
+import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hyvote.votelistener.HytaleVoteListener;
@@ -44,7 +44,7 @@ public class PlayerJoinListener {
      * @param command The command string to execute
      */
     private void executeCommand(String command) {
-        CommandManager.get().handleCommand((CommandSender) null, command);
+        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, command);
     }
 
     /**

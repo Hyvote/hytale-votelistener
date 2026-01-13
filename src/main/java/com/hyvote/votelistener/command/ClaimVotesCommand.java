@@ -5,7 +5,7 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.AbstractCommand;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandManager;
-import com.hypixel.hytale.server.core.command.system.CommandSender;
+import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hyvote.votelistener.HytaleVoteListener;
@@ -50,7 +50,7 @@ public class ClaimVotesCommand extends AbstractCommand {
      * @param command The command string to execute
      */
     private void executeCommand(String command) {
-        CommandManager.get().handleCommand((CommandSender) null, command);
+        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, command);
     }
 
     /**
